@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import Header from "./Header";
 
-const Signup = () => {
+const Login = () => {
   const navigate = useNavigate();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -14,7 +14,7 @@ const Signup = () => {
       <Header />
       <section className="h-[40rem] grid content-center">
         <div className="w-96 mx-auto grid gap-8">
-          <p className="text-2xl">Sign Up</p>
+          <p className="text-2xl">Log In</p>
           <TextField
             id="outlined-basic"
             label="Username"
@@ -35,14 +35,14 @@ const Signup = () => {
           />
           <div className="grid">
             <p className="pr-3 mb-4 text-right">
-              Already a user?{" "}
+              Don't have an account yet?{" "}
               <span
                 className="text-blue-500 font-semibold"
                 onClick={() => {
-                  navigate("/login");
+                  navigate("/signup");
                 }}
               >
-                Log in
+                Sign up
               </span>
             </p>
             <Button
@@ -50,7 +50,7 @@ const Signup = () => {
               onClick={() => {
                 axios({
                   method: "post",
-                  url: "http://localhost:3000/auth/signup",
+                  url: "http://localhost:3000/auth/login",
                   data: {
                     username,
                     password,
@@ -67,4 +67,4 @@ const Signup = () => {
   );
 };
 
-export default Signup;
+export default Login;
