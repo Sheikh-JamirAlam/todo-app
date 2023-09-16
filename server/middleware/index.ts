@@ -3,9 +3,9 @@ import jwt from "jsonwebtoken";
 require("dotenv").config();
 
 export const authenticateJwt = (req: Request, res: Response, next: NextFunction) => {
-  const authHeader = req.headers.authorization;
+  const authHeader: string | undefined = req.headers.authorization;
   if (authHeader) {
-    const token = authHeader.split(" ")[1];
+    const token: string = authHeader.split(" ")[1];
     jwt.verify(token, process.env.SECRET_KEY as string, (err, payload) => {
       if (err) {
         return res.status(403).json({

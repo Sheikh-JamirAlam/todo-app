@@ -9,10 +9,17 @@ import { RadioButtonUnchecked, CheckCircleOutline, Add } from "@mui/icons-materi
 
 function App() {
   const [title, setTitle] = useState("");
-  const { data, error } = useSWR("http://localhost:3000/auth/user", fetcher);
+  const { data, error } = useSWR("http://localhost:3000/auth/user", fetcher, { revalidateOnFocus: false, refreshInterval: 600000 });
 
   const addTodo = async () => {
-    console.log(title);
+    const res = await axios.post(
+      "http://localhost:3000/todo",
+      {
+        title,
+      },
+      { headers: { Authorization: `Bearer ${localStorage.getItem("token")}`, "Content-Type": "application/json" } }
+    );
+    console.log(res.data);
   };
 
   return (

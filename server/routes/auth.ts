@@ -1,4 +1,4 @@
-import express from "express";
+import express, { Request, Response } from "express";
 import jwt from "jsonwebtoken";
 import { z } from "zod";
 import { User } from "../db";
@@ -23,7 +23,7 @@ export const signupInput = z.object({
   password: z.string(),
 });
 
-router.post("/signup", async (req, res) => {
+router.post("/signup", async (req: Request, res: Response) => {
   const input = signupInput.safeParse(req.body);
   if (!input.success) {
     return res.status(403).json({ msg: "Invalid username: " + input.error.issues[0].message });
@@ -42,7 +42,7 @@ router.post("/signup", async (req, res) => {
   res.json({ message: "User created successfully", token });
 });
 
-router.post("/login", async (req, res) => {
+router.post("/login", async (req: Request, res: Response) => {
   const input = signupInput.safeParse(req.body);
   if (!input.success) {
     return res.status(403).json({ msg: "Input error" });
@@ -54,13 +54,14 @@ router.post("/login", async (req, res) => {
 
   if (user) {
     const token = jwt.sign({ id: user._id }, SECRET, { expiresIn: "5d" });
-    res.json({ message: "User created successfully", token });
+    return res.json({ message: "User created successfully", token });
   }
   return res.status(403).json({ msg: "Invalid username or password" });
 });
 
-router.get("/user", authenticateJwt, async (req, res) => {
+router.get("/user", authenticateJwt, async (req: Request, res: Response) => {
   const userId = req.headers["userId"];
+
   const user = await User.findById(userId);
   if (user) {
     res.json({ username: user.username });
