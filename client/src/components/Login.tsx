@@ -6,8 +6,8 @@ import Header from "./Header";
 
 const Login = () => {
   const navigate = useNavigate();
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
+  const [username, setUsername] = useState<string>("");
+  const [password, setPassword] = useState<string>("");
 
   return (
     <>
@@ -37,7 +37,7 @@ const Login = () => {
             <p className="pr-3 mb-4 text-right">
               Don't have an account yet?{" "}
               <span
-                className="text-blue-500 font-semibold"
+                className="text-blue-500 font-semibold cursor-pointer"
                 onClick={() => {
                   navigate("/signup");
                 }}
@@ -47,15 +47,29 @@ const Login = () => {
             </p>
             <Button
               variant="contained"
-              onClick={() => {
-                axios({
-                  method: "post",
-                  url: "http://localhost:3000/auth/login",
-                  data: {
-                    username,
-                    password,
-                  },
-                });
+              onClick={async () => {
+                const response = await axios
+                  .post(
+                    "http://localhost:3000/auth/login",
+                    {
+                      username,
+                      password,
+                    },
+                    {
+                      headers: {
+                        "Content-Type": "application/json",
+                      },
+                    }
+                  )
+                  .catch((err) => {
+                    console.error(err);
+                  });
+                if (response?.data.token) {
+                  localStorage.setItem("token", response.data.token);
+                  navigate("/");
+                } else {
+                  alert("Username or password incorrect");
+                }
               }}
             >
               Sign Up

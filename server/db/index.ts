@@ -7,7 +7,6 @@ const userSchema = new mongoose.Schema({
 
 const todoSchema = new mongoose.Schema({
   title: String,
-  content: String,
   isDone: Boolean,
   userId: String,
 });

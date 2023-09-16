@@ -2,6 +2,7 @@ import express from "express";
 import jwt from "jsonwebtoken";
 import { z } from "zod";
 import { User } from "../db";
+import { authenticateJwt } from "../middleware";
 require("dotenv").config();
 
 const router = express.Router();
@@ -56,6 +57,16 @@ router.post("/login", async (req, res) => {
     res.json({ message: "User created successfully", token });
   }
   return res.status(403).json({ msg: "Invalid username or password" });
+});
+
+router.get("/user", authenticateJwt, async (req, res) => {
+  const userId = req.headers["userId"];
+  const user = await User.findById(userId);
+  if (user) {
+    res.json({ username: user.username });
+  } else {
+    res.status(403).json({ msg: "User not logged in" });
+  }
 });
 
 export default router;
