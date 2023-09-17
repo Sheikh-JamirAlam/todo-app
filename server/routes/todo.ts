@@ -19,10 +19,10 @@ router.post("/", authenticateJwt, (req: Request, res: Response) => {
   newTodo
     .save()
     .then((savedTodo) => {
-      res.status(201).json(savedTodo);
+      return res.status(201).json(savedTodo);
     })
     .catch((err) => {
-      res.status(500).json({ error: "Failed to create a new todo" });
+      return res.status(500).json({ error: "Failed to create a new todo" });
     });
 });
 
@@ -31,10 +31,10 @@ router.get("/", authenticateJwt, (req: Request, res: Response) => {
 
   Todo.find({ userId })
     .then((todos) => {
-      res.status(200).json(todos);
+      return res.status(200).json(todos);
     })
     .catch((err) => {
-      res.status(500).json({ error: "Failed to retrieve todos" });
+      return res.status(500).json({ error: "Failed to retrieve todos" });
     });
 });
 

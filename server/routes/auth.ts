@@ -39,7 +39,7 @@ router.post("/signup", async (req: Request, res: Response) => {
   const newUser = new User({ username, password });
   await newUser.save();
   const token = jwt.sign({ id: newUser._id }, SECRET, { expiresIn: "5d" });
-  res.json({ message: "User created successfully", token });
+  return res.json({ message: "User created successfully", token });
 });
 
 router.post("/login", async (req: Request, res: Response) => {
@@ -64,9 +64,9 @@ router.get("/user", authenticateJwt, async (req: Request, res: Response) => {
 
   const user = await User.findById(userId);
   if (user) {
-    res.json({ username: user.username });
+    return res.json({ username: user.username });
   } else {
-    res.status(403).json({ msg: "User not logged in" });
+    return res.status(403).json({ msg: "User not logged in" });
   }
 });
 
