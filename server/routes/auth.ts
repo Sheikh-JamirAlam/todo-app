@@ -2,13 +2,13 @@ import express, { Request, Response } from "express";
 import jwt from "jsonwebtoken";
 import { z } from "zod";
 import { User } from "../db";
-import { authenticateJwt } from "../middleware";
-require("dotenv").config();
+import { CustomRequest, authenticateJwt } from "../middleware";
+import "dotenv/config";
 
 const router = express.Router();
 const SECRET = process.env.SECRET_KEY as string;
 
-export const signupInput = z.object({
+const signupInput = z.object({
   username: z
     .string()
     .min(1, {
@@ -60,7 +60,7 @@ router.post("/login", async (req: Request, res: Response) => {
 });
 
 router.get("/user", authenticateJwt, async (req: Request, res: Response) => {
-  const userId = req.headers["userId"];
+  const userId = (req as CustomRequest).userId;
 
   const user = await User.findById(userId);
   if (user) {

@@ -7,11 +7,7 @@ import { RadioButtonUnchecked, CheckCircleOutline, Add } from "@mui/icons-materi
 import Header from "./components/Header";
 import NotLoggedIn from "./components/NotLoggedIn";
 import Todos from "./components/Todos";
-
-interface TodoType {
-  title: string;
-  isDone: boolean;
-}
+import { TodoType } from "./types";
 
 function App() {
   const [title, setTitle] = useState<string>("");
@@ -26,7 +22,7 @@ function App() {
       },
       { headers: { Authorization: `Bearer ${localStorage.getItem("token")}`, "Content-Type": "application/json" } }
     );
-    const todo: TodoType = { title: res.data.title, isDone: res.data.isDone };
+    const todo: TodoType = { title: res.data.title, isDone: res.data.isDone, todoId: res.data._id };
     setTodos((prev) => [...prev, todo]);
     setTitle("");
   };
@@ -57,7 +53,7 @@ function App() {
                 </Fab>
               </div>
             </div>
-            <Todos todoList={todos} setTodoList={setTodos} userFetchDone={user} />
+            <Todos todoList={todos} setTodoList={setTodos} />
             {/* {todos.map((todo: TodoType, index: number) => {
               return <Todos key={index} title={todo.title} />;
             })} */}

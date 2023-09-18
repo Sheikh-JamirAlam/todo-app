@@ -1,6 +1,10 @@
 import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
-require("dotenv").config();
+import "dotenv/config";
+
+export interface CustomRequest extends Request {
+  userId: string;
+}
 
 export const authenticateJwt = (req: Request, res: Response, next: NextFunction) => {
   const authHeader: string | undefined = req.headers.authorization;
@@ -22,7 +26,7 @@ export const authenticateJwt = (req: Request, res: Response, next: NextFunction)
           message: "Forbidden",
         });
       }
-      req.headers["userId"] = payload.id;
+      (req as CustomRequest).userId = payload.id;
       next();
     });
   } else {

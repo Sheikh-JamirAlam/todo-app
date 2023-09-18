@@ -1,22 +1,17 @@
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import useSWR from "swr";
 import axios from "axios";
 import { Checkbox } from "@mui/material";
 import { RadioButtonUnchecked, CheckCircleOutline } from "@mui/icons-material";
-
-interface TodoType {
-  title: string;
-  isDone: boolean;
-}
+import { TodoType } from "./../types";
 
 interface PropTypes {
   todoList: TodoType[];
   setTodoList: React.Dispatch<React.SetStateAction<TodoType[]>>;
-  userFetchDone: { username: string };
 }
 
 const Todos = ({ todoList, setTodoList }: PropTypes) => {
-  const [isDone, setIsDone] = useState<boolean>(false);
+  //const [isDone, setIsDone] = useState<boolean>(false);
   const { data } = useSWR(true && "http://localhost:3000/todo", fetcher, { revalidateOnFocus: false });
 
   useEffect(() => {
@@ -31,7 +26,7 @@ const Todos = ({ todoList, setTodoList }: PropTypes) => {
       },
       { headers: { Authorization: `Bearer ${localStorage.getItem("token")}`, "Content-Type": "application/json" } }
     );
-    const todo: TodoType = { title: res.data.title, isDone: res.data.isDone };
+    const todo: TodoType = { title: res.data.title, isDone: res.data.isDone, todoId: res.data._id };
     setTodoList((prev) => [...prev, todo]);
   };
 
@@ -41,7 +36,7 @@ const Todos = ({ todoList, setTodoList }: PropTypes) => {
         return (
           <div key={index} className="w-[70%] mx-auto pt-8 grid gap-4">
             <div className="p-3 flex gap-2 bg-slate-100">
-              <Checkbox icon={<RadioButtonUnchecked />} checkedIcon={<CheckCircleOutline />} onClick={handleDoneCheck(todo.todoId)} />
+              <Checkbox icon={<RadioButtonUnchecked />} checkedIcon={<CheckCircleOutline />} onClick={() => handleDoneCheck(todo.todoId)} />
               <p className={`w-full px-2 my-auto text-lg ${todo.isDone && "line-through"}`}>{todo.title}</p>
             </div>
           </div>
