@@ -69,4 +69,20 @@ router.patch("/done", authenticateJwt, (req: Request, res: Response) => {
     });
 });
 
+router.put("/delete", authenticateJwt, (req: Request, res: Response) => {
+  const { todoId }: { todoId: string } = req.body;
+  const userId = (req as CustomRequest).userId;
+
+  Todo.findOneAndDelete({ _id: todoId, userId })
+    .then((deletedTodo) => {
+      if (deletedTodo) {
+        return res.status(200).json({ msg: "Deleted todo" });
+      }
+      return res.status(500).json({ error: "Failed to delete todo" });
+    })
+    .catch((err) => {
+      return res.status(500).json({ error: "Failed to retrieve todos" });
+    });
+});
+
 export default router;

@@ -9,8 +9,6 @@ import NotLoggedIn from "./components/NotLoggedIn";
 import Todos from "./components/Todos";
 import { TodoType } from "./types";
 
-// TODO: Add delete feature
-
 function App() {
   const [title, setTitle] = useState<string>("");
   const [todos, setTodos] = useState<TodoType[]>([]);
@@ -20,15 +18,13 @@ function App() {
   const addTodo = async () => {
     setHasAddTodoClicked(true);
     try {
-      const res = await axios.post(
+      await axios.post(
         "http://localhost:3000/todo",
         {
           title,
         },
         { headers: { Authorization: `Bearer ${localStorage.getItem("token")}`, "Content-Type": "application/json" } }
       );
-      const todo: TodoType = { title: res.data.title, isDone: res.data.isDone, _id: res.data._id };
-      setTodos((prev) => [...prev, todo]);
       setTitle("");
     } catch (err) {
       console.error(err);
@@ -61,7 +57,7 @@ function App() {
                 </Fab>
               </div>
             </div>
-            <Todos todoList={todos} setTodoList={setTodos} />
+            <Todos todoList={todos} setTodoList={setTodos} hasAddTodoClicked={hasAddTodoClicked} />
           </>
         )}
       </main>
