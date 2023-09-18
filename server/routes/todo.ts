@@ -51,21 +51,21 @@ router.get("/", authenticateJwt, (req: Request, res: Response) => {
     });
 });
 
-// TODO: isDone needs to be toggled
-
 router.patch("/done", authenticateJwt, (req: Request, res: Response) => {
   const { todoId }: { todoId: string } = req.body;
   const userId = (req as CustomRequest).userId;
 
-  Todo.findOneAndUpdate({ _id: todoId, userId }, { isDone: true }, { new: true })
-    .then((updatedTodo) => {
-      if (!updatedTodo) {
-        return res.status(404).json({ error: "Todo not found" });
+  Todo.findOne({ _id: todoId, userId })
+    .then(async (todo) => {
+      if (todo) {
+        todo.isDone = !todo.isDone;
+        const updatedTodo = await todo.save();
+        return res.status(201).json(updatedTodo);
       }
-      res.json(updatedTodo);
+      return res.status(500).json({ error: "Failed to update todo" });
     })
     .catch((err) => {
-      res.status(500).json({ error: "Failed to update todo" });
+      return res.status(500).json({ error: "Failed to retrieve todos" });
     });
 });
 

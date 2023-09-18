@@ -9,27 +9,35 @@ import NotLoggedIn from "./components/NotLoggedIn";
 import Todos from "./components/Todos";
 import { TodoType } from "./types";
 
+// TODO: Add delete feature
+
 function App() {
   const [title, setTitle] = useState<string>("");
   const [todos, setTodos] = useState<TodoType[]>([]);
+  const [hasAddTodoClicked, setHasAddTodoClicked] = useState<boolean>(false);
   const { data: user, error: userError } = useSWR("http://localhost:3000/auth/user", fetcher, { revalidateOnFocus: false });
 
   const addTodo = async () => {
-    const res = await axios.post(
-      "http://localhost:3000/todo",
-      {
-        title,
-      },
-      { headers: { Authorization: `Bearer ${localStorage.getItem("token")}`, "Content-Type": "application/json" } }
-    );
-    const todo: TodoType = { title: res.data.title, isDone: res.data.isDone, _id: res.data._id };
-    setTodos((prev) => [...prev, todo]);
-    setTitle("");
+    setHasAddTodoClicked(true);
+    try {
+      const res = await axios.post(
+        "http://localhost:3000/todo",
+        {
+          title,
+        },
+        { headers: { Authorization: `Bearer ${localStorage.getItem("token")}`, "Content-Type": "application/json" } }
+      );
+      const todo: TodoType = { title: res.data.title, isDone: res.data.isDone, _id: res.data._id };
+      setTodos((prev) => [...prev, todo]);
+      setTitle("");
+    } catch (err) {
+      console.error(err);
+    }
+    setHasAddTodoClicked(false);
   };
 
   return (
     <RecoilRoot>
-      {/* <InitialState setTodos={setTodos} /> */}
       <main className="h-screen bg-slate-200">
         <Header />
         {userError && <NotLoggedIn />}
@@ -48,15 +56,12 @@ function App() {
                 ></input>
               </div>
               <div className="flex justify-end">
-                <Fab color="primary" aria-label="add" onClick={addTodo}>
+                <Fab color="primary" aria-label="add" onClick={addTodo} disabled={hasAddTodoClicked}>
                   <Add />
                 </Fab>
               </div>
             </div>
             <Todos todoList={todos} setTodoList={setTodos} />
-            {/* {todos.map((todo: TodoType, index: number) => {
-              return <Todos key={index} title={todo.title} />;
-            })} */}
           </>
         )}
       </main>
@@ -64,20 +69,9 @@ function App() {
   );
 }
 
-// const InitialState = ({ setTodos }: { setTodos: Dispatch<SetStateAction<TodoType[]>> }) => {
-//   const { data: todoList, error: todoError } = useSWR("http://localhost:3000/todo", fetchTodoList, { revalidateOnFocus: false });
-//   todoList && setTodos(todoList);
-//   return <></>;
-// };
-
 const fetcher = async (url: string) => {
   const res = await axios.get(url, { headers: { Authorization: `Bearer ${localStorage.getItem("token")}`, "Content-Type": "application/json" } });
   return res.data;
 };
-
-// const fetchTodoList = async (url: string) => {
-//   const res = await axios.get(url, { headers: { Authorization: `Bearer ${localStorage.getItem("token")}`, "Content-Type": "application/json" } });
-//   return res.data;
-// };
 
 export default App;
