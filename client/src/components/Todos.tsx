@@ -16,7 +16,6 @@ const Todos = ({ todoList, setTodoList, hasAddTodoClicked }: PropTypes) => {
 
   useEffect(() => {
     data && setTodoList(data);
-    console.log(data);
   }, [data, setTodoList]);
 
   if (hasAddTodoClicked) {

@@ -9,6 +9,8 @@ import NotLoggedIn from "./components/NotLoggedIn";
 import Todos from "./components/Todos";
 import { TodoType } from "./types";
 
+// TODO: Add profile part
+
 function App() {
   const [title, setTitle] = useState<string>("");
   const [todos, setTodos] = useState<TodoType[]>([]);
