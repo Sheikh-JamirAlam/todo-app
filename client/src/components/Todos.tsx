@@ -58,7 +58,7 @@ const Todos = ({ todoList, setTodoList, hasAddTodoClicked }: PropTypes) => {
   };
 
   return (
-    <>
+    <section className="pt-2 pb-16">
       {todoList.map((todo: TodoType, index: number) => {
         return (
           <div key={index} className="w-[70%] mx-auto pt-4 grid gap-4">
@@ -72,7 +72,7 @@ const Todos = ({ todoList, setTodoList, hasAddTodoClicked }: PropTypes) => {
           </div>
         );
       })}
-    </>
+    </section>
   );
 };
 
