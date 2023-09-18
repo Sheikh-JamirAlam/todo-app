@@ -51,11 +51,13 @@ router.get("/", authenticateJwt, (req: Request, res: Response) => {
     });
 });
 
+// TODO: isDone needs to be toggled
+
 router.patch("/done", authenticateJwt, (req: Request, res: Response) => {
   const { todoId }: { todoId: string } = req.body;
   const userId = (req as CustomRequest).userId;
 
-  Todo.findOneAndUpdate({ _id: todoId, userId }, { done: true }, { new: true })
+  Todo.findOneAndUpdate({ _id: todoId, userId }, { isDone: true }, { new: true })
     .then((updatedTodo) => {
       if (!updatedTodo) {
         return res.status(404).json({ error: "Todo not found" });

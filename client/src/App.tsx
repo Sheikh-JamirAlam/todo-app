@@ -22,7 +22,7 @@ function App() {
       },
       { headers: { Authorization: `Bearer ${localStorage.getItem("token")}`, "Content-Type": "application/json" } }
     );
-    const todo: TodoType = { title: res.data.title, isDone: res.data.isDone, todoId: res.data._id };
+    const todo: TodoType = { title: res.data.title, isDone: res.data.isDone, _id: res.data._id };
     setTodos((prev) => [...prev, todo]);
     setTitle("");
   };

@@ -11,7 +11,6 @@ interface PropTypes {
 }
 
 const Todos = ({ todoList, setTodoList }: PropTypes) => {
-  //const [isDone, setIsDone] = useState<boolean>(false);
   const { data } = useSWR(true && "http://localhost:3000/todo", fetcher, { revalidateOnFocus: false });
 
   useEffect(() => {
@@ -19,15 +18,17 @@ const Todos = ({ todoList, setTodoList }: PropTypes) => {
   }, [data, setTodoList]);
 
   const handleDoneCheck = async (todoId: string) => {
-    const res = await axios.post(
+    const res = await axios.patch(
       "http://localhost:3000/todo/done",
       {
         todoId,
       },
       { headers: { Authorization: `Bearer ${localStorage.getItem("token")}`, "Content-Type": "application/json" } }
     );
-    const todo: TodoType = { title: res.data.title, isDone: res.data.isDone, todoId: res.data._id };
-    setTodoList((prev) => [...prev, todo]);
+    const todo: TodoType = { title: res.data.title, isDone: res.data.isDone, _id: res.data._id };
+    const clickedTodoIndex = todoList.findIndex((eachTodo) => eachTodo._id === todo._id);
+    const newTodos = [...todoList.slice(0, clickedTodoIndex), todo, ...todoList.slice(clickedTodoIndex + 1)];
+    setTodoList(newTodos);
   };
 
   return (
@@ -36,7 +37,7 @@ const Todos = ({ todoList, setTodoList }: PropTypes) => {
         return (
           <div key={index} className="w-[70%] mx-auto pt-8 grid gap-4">
             <div className="p-3 flex gap-2 bg-slate-100">
-              <Checkbox icon={<RadioButtonUnchecked />} checkedIcon={<CheckCircleOutline />} onClick={() => handleDoneCheck(todo.todoId)} />
+              <Checkbox icon={<RadioButtonUnchecked />} checkedIcon={<CheckCircleOutline />} checked={todo.isDone} onClick={() => handleDoneCheck(todo._id)} />
               <p className={`w-full px-2 my-auto text-lg ${todo.isDone && "line-through"}`}>{todo.title}</p>
             </div>
           </div>
