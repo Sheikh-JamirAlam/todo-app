@@ -6,7 +6,7 @@ const NotLoggedIn = () => {
 
   return (
     <section className="h-[40rem] grid content-center">
-      <div className="w-96 mx-auto text-center grid">
+      <div className="w-[80%] md:w-[50%] lg:w-[30%] mx-auto text-center grid">
         <p className="text-lg">To create Todos you need to first have an account. Login or Signup here.</p>
         <div className="my-10 flex justify-evenly">
           <Button variant="contained" onClick={() => navigate("/signup")}>

@@ -61,7 +61,7 @@ const Todos = ({ todoList, setTodoList, hasAddTodoClicked }: PropTypes) => {
     <section className="pt-2 pb-16">
       {todoList.map((todo: TodoType, index: number) => {
         return (
-          <div key={index} className="w-[70%] mx-auto pt-4 grid gap-4">
+          <div key={index} className="w-[90%] md:w-[70%] mx-auto pt-4 grid gap-4">
             <div className="p-3 flex gap-2 bg-slate-100">
               <Checkbox icon={<RadioButtonUnchecked />} checkedIcon={<CheckCircleOutline />} checked={todo.isDone} onClick={() => handleDoneCheck(todo._id)} />
               <p className={`w-full px-2 my-auto text-lg ${todo.isDone && "line-through"}`}>{todo.title}</p>

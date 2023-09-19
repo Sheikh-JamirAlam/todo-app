@@ -54,7 +54,7 @@ const Login = () => {
     <>
       <Header />
       <section className="h-[40rem] grid content-center">
-        <div className="w-96 mx-auto grid gap-8">
+        <div className="w-[80%] md:w-[50%] lg:w-[30%] mx-auto grid gap-8">
           <p className="text-2xl">Log In</p>
           <TextField
             id="outlined-basic"

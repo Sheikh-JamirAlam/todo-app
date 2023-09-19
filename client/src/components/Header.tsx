@@ -10,14 +10,19 @@ interface PropsType {
 const Header = ({ username }: PropsType) => {
   const navigate = useNavigate();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+
   const open = Boolean(anchorEl);
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
   };
+
   const handleClose = async () => {
+    setAnchorEl(null);
+  };
+
+  const handleLogout = async () => {
     localStorage.clear();
     navigate(0);
-    setAnchorEl(null);
   };
 
   return (
@@ -73,7 +78,12 @@ const Header = ({ username }: PropsType) => {
             transformOrigin={{ horizontal: "right", vertical: "top" }}
             anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
           >
-            <MenuItem onClick={handleClose}>
+            <MenuItem
+              onClick={() => {
+                handleClose();
+                handleLogout();
+              }}
+            >
               <ListItemIcon>
                 <Logout fontSize="small" />
               </ListItemIcon>

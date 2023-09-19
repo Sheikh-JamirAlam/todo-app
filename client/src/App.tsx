@@ -8,7 +8,7 @@ import NotLoggedIn from "./components/NotLoggedIn";
 import Todos from "./components/Todos";
 import { TodoType } from "./types";
 
-// TODO: Password hashing
+// TODO: Recoil user data, dockerization
 
 function App() {
   const [title, setTitle] = useState<string>("");
@@ -35,9 +35,11 @@ function App() {
 
   useEffect(() => {
     const keyDownHandler = (event: { key: string; preventDefault: () => void }) => {
-      if (event.key === "Enter") {
-        event.preventDefault();
-        addTodo();
+      if (title !== "") {
+        if (event.key === "Enter") {
+          event.preventDefault();
+          addTodo();
+        }
       }
     };
     document.addEventListener("keydown", keyDownHandler);
@@ -53,7 +55,7 @@ function App() {
       {userError && <NotLoggedIn />}
       {user && (
         <>
-          <section className="w-[70%] mx-auto pt-8 grid gap-4">
+          <section className="w-[90%] md:w-[70%] mx-auto pt-8 grid gap-4">
             <div className="p-3 flex gap-2 bg-slate-100">
               <Checkbox icon={<RadioButtonUnchecked />} checkedIcon={<CheckCircleOutline />} disabled />
               <input

@@ -1,6 +1,7 @@
 import express, { Request, Response } from "express";
 import jwt from "jsonwebtoken";
 import { z } from "zod";
+import bcrypt from "bcrypt";
 import { User } from "../db";
 import { CustomRequest, authenticateJwt } from "../middleware";
 import "dotenv/config";
@@ -36,7 +37,8 @@ router.post("/signup", async (req: Request, res: Response) => {
   if (user) {
     return res.status(403).json({ msg: "User already exists" });
   }
-  const newUser = new User({ username, password });
+  const encryptedPassword = await bcrypt.hash(password, 10);
+  const newUser = new User({ username, password: encryptedPassword });
   await newUser.save();
   const token = jwt.sign({ id: newUser._id }, SECRET, { expiresIn: "5d" });
   return res.json({ message: "User created successfully", token });
@@ -50,13 +52,18 @@ router.post("/login", async (req: Request, res: Response) => {
 
   const { username, password } = input.data;
 
-  const user = await User.findOne({ username, password });
+  const user: { username: string; password: string; _id: string } | null = await User.findOne({ username });
 
-  if (user) {
-    const token = jwt.sign({ id: user._id }, SECRET, { expiresIn: "5d" });
-    return res.json({ message: "User created successfully", token });
+  if (!user) {
+    return res.status(403).json({ msg: "Invalid username or password" });
   }
-  return res.status(403).json({ msg: "Invalid username or password" });
+
+  const isMatched = bcrypt.compareSync(password, user.password);
+  if (!isMatched) {
+    return res.status(403).json({ msg: "Invalid username or password" });
+  }
+  const token = jwt.sign({ id: user._id }, SECRET, { expiresIn: "5d" });
+  return res.json({ message: "User created successfully", token });
 });
 
 router.get("/user", authenticateJwt, async (req: Request, res: Response) => {
