@@ -1,27 +1,13 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect, useState } from "react";
 import { Button, FormControl, IconButton, InputAdornment, InputLabel, OutlinedInput, TextField } from "@mui/material";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import { z } from "zod";
+import useSWR from "swr";
 import Header from "./Header";
-
-const signupInput = z.object({
-  username: z
-    .string()
-    .min(1, {
-      message: "Username cannot be empty",
-    })
-    .max(20, {
-      message: "Username must be 20 characters or less",
-    })
-    .regex(/^[a-zA-Z0-9_]*$/, {
-      message: "Username can only contain letters, numbers, and underscores",
-    }),
-  password: z.string().min(1, {
-    message: "Password cannot be empty",
-  }),
-});
+import { signupInput } from "../zod";
+import { fetcher } from "../swr";
 
 const Signup = () => {
   const navigate = useNavigate();
@@ -30,6 +16,7 @@ const Signup = () => {
   const [showPassword, setShowPassword] = useState<boolean>(false);
   const [isInputUsernameSafe, setIsInputUsernameSafe] = useState<boolean>(true);
   const [isInputPasswordSafe, setIsInputPasswordSafe] = useState<boolean>(true);
+  const { data: user } = useSWR("http://localhost:3000/auth/user", fetcher, { revalidateIfStale: false, revalidateOnFocus: false, revalidateOnReconnect: false });
 
   const handleSignup = async () => {
     const input = signupInput.safeParse({ username, password });
@@ -54,16 +41,18 @@ const Signup = () => {
         }
       )
       .catch((err) => {
-        console.error(err);
+        console.error(err + " : " + err.response.data.msg);
       });
     if (response?.data.token) {
       localStorage.setItem("token", response.data.token);
       navigate("/");
     } else {
-      alert("Username or password incorrect");
+      setIsInputUsernameSafe(false);
+      setIsInputPasswordSafe(false);
     }
   };
 
+  /* eslint-disable react-hooks/exhaustive-deps */
   useEffect(() => {
     const keyDownHandler = (event: { key: string; preventDefault: () => void }) => {
       if (event.key === "Enter") {
@@ -75,8 +64,11 @@ const Signup = () => {
     return () => {
       document.removeEventListener("keydown", keyDownHandler);
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [username, password]);
+
+  useEffect(() => {
+    user && navigate("/");
+  }, [user]);
 
   return (
     <>

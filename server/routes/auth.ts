@@ -21,7 +21,9 @@ const signupInput = z.object({
     .regex(/^[a-zA-Z0-9_]*$/, {
       message: "Username can only contain letters, numbers, and underscores",
     }),
-  password: z.string(),
+  password: z.string().min(8, {
+    message: "Password should be at least 8 characters",
+  }),
 });
 
 router.post("/signup", async (req: Request, res: Response) => {

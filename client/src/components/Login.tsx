@@ -3,15 +3,29 @@ import { Button, FormControl, IconButton, InputAdornment, InputLabel, OutlinedIn
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import useSWR from "swr";
 import Header from "./Header";
+import { signupInput } from "../zod";
+import { fetcher } from "../swr";
 
 const Login = () => {
   const navigate = useNavigate();
   const [username, setUsername] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [showPassword, setShowPassword] = useState<boolean>(false);
+  const [isInputUsernameSafe, setIsInputUsernameSafe] = useState<boolean>(true);
+  const [isInputPasswordSafe, setIsInputPasswordSafe] = useState<boolean>(true);
+  const { data: user } = useSWR("http://localhost:3000/auth/user", fetcher, { revalidateIfStale: false, revalidateOnFocus: false, revalidateOnReconnect: false });
 
   const handleLogin = async () => {
+    const input = signupInput.safeParse({ username, password });
+    if (!input.success) {
+      input.error.issues[0].path[0] === "username" && setIsInputUsernameSafe(false);
+      input.error.issues[0].path[0] === "password" && setIsInputPasswordSafe(false);
+      input.error.issues[1]?.path[0] === "password" && setIsInputPasswordSafe(false);
+      return;
+    }
+
     const response = await axios
       .post(
         "http://localhost:3000/auth/login",
@@ -26,16 +40,18 @@ const Login = () => {
         }
       )
       .catch((err) => {
-        console.error(err);
+        console.error(err + " : " + err.response.data.msg);
       });
     if (response?.data.token) {
       localStorage.setItem("token", response.data.token);
       navigate("/");
     } else {
-      alert("Username or password incorrect");
+      setIsInputUsernameSafe(false);
+      setIsInputPasswordSafe(false);
     }
   };
 
+  /* eslint-disable react-hooks/exhaustive-deps */
   useEffect(() => {
     const keyDownHandler = (event: { key: string; preventDefault: () => void }) => {
       if (event.key === "Enter") {
@@ -47,8 +63,11 @@ const Login = () => {
     return () => {
       document.removeEventListener("keydown", keyDownHandler);
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [username, password]);
+
+  useEffect(() => {
+    user && navigate("/");
+  }, [user]);
 
   return (
     <>
@@ -60,19 +79,27 @@ const Login = () => {
             id="outlined-basic"
             label="Username"
             variant="outlined"
+            error={!isInputUsernameSafe}
             value={username}
             onChange={(e) => {
               setUsername(e.target.value);
+              setIsInputUsernameSafe(true);
+              setIsInputPasswordSafe(true);
             }}
           />
           <FormControl variant="outlined">
-            <InputLabel htmlFor="outlined-adornment-password">Password</InputLabel>
+            <InputLabel htmlFor="outlined-adornment-password" error={!isInputPasswordSafe}>
+              Password
+            </InputLabel>
             <OutlinedInput
               id="outlined-adornment-password"
+              error={!isInputPasswordSafe}
               value={password}
               type={showPassword ? "text" : "password"}
               onChange={(e) => {
                 setPassword(e.target.value);
+                setIsInputUsernameSafe(true);
+                setIsInputPasswordSafe(true);
               }}
               endAdornment={
                 <InputAdornment position="end">

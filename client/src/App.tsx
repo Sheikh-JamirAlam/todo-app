@@ -7,8 +7,7 @@ import Header from "./components/Header";
 import NotLoggedIn from "./components/NotLoggedIn";
 import Todos from "./components/Todos";
 import { TodoType } from "./types";
-
-// TODO: Recoil user data, dockerization
+import { fetcher } from "./swr";
 
 function App() {
   const [title, setTitle] = useState<string>("");
@@ -79,10 +78,5 @@ function App() {
     </main>
   );
 }
-
-const fetcher = async (url: string) => {
-  const res = await axios.get(url, { headers: { Authorization: `Bearer ${localStorage.getItem("token")}`, "Content-Type": "application/json" } });
-  return res.data;
-};
 
 export default App;
