@@ -13,7 +13,7 @@ function App() {
   const [title, setTitle] = useState<string>("");
   const [todos, setTodos] = useState<TodoType[]>([]);
   const [hasAddTodoClicked, setHasAddTodoClicked] = useState<boolean>(false);
-  const { data: user, error: userError } = useSWR("http://localhost:3000/auth/user", fetcher, { revalidateIfStale: false, revalidateOnFocus: false, revalidateOnReconnect: false });
+  const { data: user, error: userError } = useSWR("http://localhost:3000/auth/user", fetcher, { revalidateIfStale: false, revalidateOnFocus: false });
 
   const addTodo = async () => {
     setHasAddTodoClicked(true);

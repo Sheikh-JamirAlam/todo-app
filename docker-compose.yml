@@ -1,0 +1,28 @@
+version: "3"
+
+services:
+  react-app:
+    image: react-app
+    stdin_open: true
+    build:
+      dockerfile: Dockerfile
+      context: ./client
+    ports:
+      - "8000:8000"
+    networks:
+      - mern-app
+
+  api-server:
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      - SECRET_KEY=${SECRET_KEY}
+      - MONGODB_URL=${MONGODB_URL}
+    networks:
+      - mern-app
+networks:
+  mern-app:
+    driver: bridge
