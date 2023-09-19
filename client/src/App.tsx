@@ -1,19 +1,19 @@
 import { useEffect, useState } from "react";
-import useSWR from "swr";
 import axios from "axios";
+import { useRecoilState } from "recoil";
 import { Checkbox, Fab } from "@mui/material";
 import { RadioButtonUnchecked, CheckCircleOutline, Add } from "@mui/icons-material";
 import Header from "./components/Header";
 import NotLoggedIn from "./components/NotLoggedIn";
 import Todos from "./components/Todos";
-import { TodoType } from "./types";
-import { fetcher } from "./swr";
+import { TodoType, UserAtomType } from "./types";
+import { authState } from "./store/authState.ts";
 
-function App() {
+const App = () => {
   const [title, setTitle] = useState<string>("");
   const [todos, setTodos] = useState<TodoType[]>([]);
   const [hasAddTodoClicked, setHasAddTodoClicked] = useState<boolean>(false);
-  const { data: user, error: userError } = useSWR("http://localhost:3000/auth/user", fetcher, { revalidateIfStale: false, revalidateOnFocus: false });
+  const [userAuthState] = useRecoilState<UserAtomType>(authState);
 
   const addTodo = async () => {
     setHasAddTodoClicked(true);
@@ -50,9 +50,9 @@ function App() {
 
   return (
     <main>
-      <Header username={user ? user.username : null} />
-      {userError && <NotLoggedIn />}
-      {user && (
+      <Header username={userAuthState.user ? userAuthState.user.username : null} />
+      {userAuthState.userError && <NotLoggedIn />}
+      {userAuthState.user && (
         <>
           <section className="w-[90%] md:w-[70%] mx-auto pt-8 grid gap-4">
             <div className="p-3 flex gap-2 bg-slate-100">
@@ -77,6 +77,6 @@ function App() {
       )}
     </main>
   );
-}
+};
 
 export default App;

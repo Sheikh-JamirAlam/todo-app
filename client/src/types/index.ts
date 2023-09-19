@@ -3,3 +3,9 @@ export interface TodoType {
   isDone: boolean;
   _id: string;
 }
+
+export interface UserAtomType {
+  user: { username: string } | null;
+  userError: Error | null;
+  mutate: (() => void) | null;
+}

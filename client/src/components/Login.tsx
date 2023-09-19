@@ -1,12 +1,13 @@
 import { useEffect, useState } from "react";
+import { useRecoilState } from "recoil";
 import { Button, FormControl, IconButton, InputAdornment, InputLabel, OutlinedInput, TextField } from "@mui/material";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import useSWR from "swr";
 import Header from "./Header";
 import { signupInput } from "../zod";
-import { fetcher } from "../swr";
+import { authState } from "../store/authState.ts";
+import { UserAtomType } from "../types";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -15,7 +16,7 @@ const Login = () => {
   const [showPassword, setShowPassword] = useState<boolean>(false);
   const [isInputUsernameSafe, setIsInputUsernameSafe] = useState<boolean>(true);
   const [isInputPasswordSafe, setIsInputPasswordSafe] = useState<boolean>(true);
-  const { data: user } = useSWR("http://localhost:3000/auth/user", fetcher, { revalidateIfStale: false, revalidateOnFocus: false, revalidateOnReconnect: false });
+  const [userAuthState] = useRecoilState<UserAtomType>(authState);
 
   const handleLogin = async () => {
     const input = signupInput.safeParse({ username, password });
@@ -44,6 +45,7 @@ const Login = () => {
       });
     if (response?.data.token) {
       localStorage.setItem("token", response.data.token);
+      userAuthState.mutate && userAuthState.mutate();
       navigate("/");
     } else {
       setIsInputUsernameSafe(false);
@@ -66,8 +68,8 @@ const Login = () => {
   }, [username, password]);
 
   useEffect(() => {
-    user && navigate("/");
-  }, [user]);
+    userAuthState.user && navigate("/");
+  }, [userAuthState.user]);
 
   return (
     <>

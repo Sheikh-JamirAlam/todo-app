@@ -4,7 +4,6 @@ import { z } from "zod";
 import bcrypt from "bcrypt";
 import { User } from "../db";
 import { CustomRequest, authenticateJwt } from "../middleware";
-import "dotenv/config";
 
 const router = express.Router();
 const SECRET = process.env.SECRET_KEY as string;

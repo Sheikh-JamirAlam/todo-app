@@ -1,10 +1,12 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import { RecoilRoot } from "recoil";
 import "./index.css";
 import App from "./App.tsx";
 import Signup from "./components/Signup.tsx";
 import Login from "./components/Login.tsx";
+import User from "./components/User.tsx";
 
 const router = createBrowserRouter([
   {
@@ -23,6 +25,9 @@ const router = createBrowserRouter([
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
-    <RouterProvider router={router} />
+    <RecoilRoot>
+      <User />
+      <RouterProvider router={router} />
+    </RecoilRoot>
   </React.StrictMode>
 );
