@@ -6,15 +6,15 @@ import { authState } from "../store/authState.ts";
 
 const User = () => {
   const setAuth = useSetRecoilState(authState);
-  const { data: user, error: userError, mutate } = useSWR("http://localhost:3000/auth/user", fetcher);
+  const { data: user, error: userError, isLoading, mutate } = useSWR("http://localhost:3000/auth/user", fetcher);
 
   /* eslint-disable react-hooks/exhaustive-deps */
   useEffect(() => {
-    userError && setAuth({ user, userError, mutate });
+    userError && setAuth({ user, userError, isLoading, mutate });
   }, [userError, setAuth]);
 
   useEffect(() => {
-    user && setAuth({ user, userError, mutate });
+    user && setAuth({ user, userError, isLoading, mutate });
   }, [user, setAuth]);
 
   return <></>;

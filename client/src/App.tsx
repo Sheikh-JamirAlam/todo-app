@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { useRecoilState } from "recoil";
-import { Checkbox, Fab } from "@mui/material";
+import { Checkbox, Fab, Backdrop, CircularProgress, Tooltip } from "@mui/material";
 import { RadioButtonUnchecked, CheckCircleOutline, Add } from "@mui/icons-material";
 import Header from "./components/Header";
 import NotLoggedIn from "./components/NotLoggedIn";
@@ -51,6 +51,11 @@ const App = () => {
   return (
     <main>
       <Header username={userAuthState.user ? userAuthState.user.username : null} />
+      {userAuthState.isLoading && (
+        <Backdrop sx={{ color: "#fff", zIndex: (theme: { zIndex: { drawer: number } }) => theme.zIndex.drawer + 1 }} open={userAuthState.isLoading}>
+          <CircularProgress color="inherit" />
+        </Backdrop>
+      )}
       {userAuthState.userError && <NotLoggedIn />}
       {userAuthState.user && (
         <>
@@ -67,9 +72,11 @@ const App = () => {
               ></input>
             </div>
             <div className="flex justify-end">
-              <Fab color="primary" aria-label="add" onClick={addTodo} disabled={hasAddTodoClicked}>
-                <Add />
-              </Fab>
+              <Tooltip title="Add Todo" enterDelay={800} leaveDelay={100} enterNextDelay={800}>
+                <Fab color="primary" aria-label="add" onClick={addTodo} disabled={hasAddTodoClicked}>
+                  <Add />
+                </Fab>
+              </Tooltip>
             </div>
           </section>
           <Todos todoList={todos} setTodoList={setTodos} hasAddTodoClicked={hasAddTodoClicked} />

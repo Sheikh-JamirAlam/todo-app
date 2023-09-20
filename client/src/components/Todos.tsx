@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import useSWR from "swr";
 import axios from "axios";
-import { Checkbox, IconButton } from "@mui/material";
+import { Backdrop, Checkbox, CircularProgress, IconButton, Tooltip } from "@mui/material";
 import { RadioButtonUnchecked, CheckCircleOutline, Delete } from "@mui/icons-material";
 import { TodoType } from "./../types";
 
@@ -12,7 +12,7 @@ interface PropTypes {
 }
 
 const Todos = ({ todoList, setTodoList, hasAddTodoClicked }: PropTypes) => {
-  const { data, mutate } = useSWR("http://localhost:3000/todo", fetcher);
+  const { data, isLoading, mutate } = useSWR("http://localhost:3000/todo", fetcher);
 
   useEffect(() => {
     data && setTodoList(data);
@@ -59,15 +59,22 @@ const Todos = ({ todoList, setTodoList, hasAddTodoClicked }: PropTypes) => {
 
   return (
     <section className="pt-2 pb-16">
+      {isLoading && (
+        <Backdrop sx={{ color: "#fff", zIndex: (theme: { zIndex: { drawer: number } }) => theme.zIndex.drawer + 1 }} open={isLoading}>
+          <CircularProgress color="inherit" />
+        </Backdrop>
+      )}
       {todoList.map((todo: TodoType, index: number) => {
         return (
           <div key={index} className="w-[90%] md:w-[70%] mx-auto pt-4 grid gap-4">
             <div className="p-3 flex gap-2 bg-slate-100">
               <Checkbox icon={<RadioButtonUnchecked />} checkedIcon={<CheckCircleOutline />} checked={todo.isDone} onClick={() => handleDoneCheck(todo._id)} />
               <p className={`w-full px-2 my-auto text-lg ${todo.isDone && "line-through"}`}>{todo.title}</p>
-              <IconButton aria-label="delete" onClick={() => handleDelete(todo._id)}>
-                <Delete className="hover:fill-red-600" />
-              </IconButton>
+              <Tooltip title="Delete" enterDelay={1000} leaveDelay={100} enterNextDelay={1000}>
+                <IconButton aria-label="delete" onClick={() => handleDelete(todo._id)}>
+                  <Delete className="hover:fill-red-600" />
+                </IconButton>
+              </Tooltip>
             </div>
           </div>
         );
