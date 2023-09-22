@@ -27,8 +27,8 @@ const Login = () => {
       return;
     }
 
-    await axios
-      .post(
+    try {
+      const response = await axios.post(
         "http://localhost:3000/auth/login",
         {
           username,
@@ -39,17 +39,21 @@ const Login = () => {
             "Content-Type": "application/json",
           },
         }
-      )
-      .catch((err) => {
-        console.error(err + " : " + err.response.data.msg);
-        setIsInputUsernameSafe({ isSafe: false, message: err.response.data.msg });
-        setIsInputPasswordSafe({ isSafe: false, message: err.response.data.msg });
-      })
-      .then((response) => {
-        localStorage.setItem("token", response?.data.token);
+      );
+      if (response) {
+        localStorage.setItem("token", response.data.token);
         userAuthState.mutate && userAuthState.mutate();
         navigate("/");
-      });
+      }
+    } catch (err) {
+      if (axios.isAxiosError(err)) {
+        console.error(err + " : " + err.response?.data.msg);
+        setIsInputUsernameSafe({ isSafe: false, message: err.response?.data.msg });
+        setIsInputPasswordSafe({ isSafe: false, message: err.response?.data.msg });
+      } else {
+        console.error(err);
+      }
+    }
   };
 
   /* eslint-disable react-hooks/exhaustive-deps */
