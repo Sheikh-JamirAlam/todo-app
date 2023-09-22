@@ -27,7 +27,7 @@ const Signup = () => {
       return;
     }
 
-    const response = await axios
+    await axios
       .post(
         "http://localhost:3000/auth/signup",
         {
@@ -42,15 +42,14 @@ const Signup = () => {
       )
       .catch((err) => {
         console.error(err + " : " + err.response.data.msg);
+        setIsInputUsernameSafe({ isSafe: false, message: err.response.data.msg });
+        setIsInputPasswordSafe({ isSafe: false, message: err.response.data.msg });
+      })
+      .then((response) => {
+        localStorage.setItem("token", response?.data.token);
+        userAuthState.mutate && userAuthState.mutate();
+        navigate("/");
       });
-    if (response?.data.token) {
-      localStorage.setItem("token", response.data.token);
-      userAuthState.mutate && userAuthState.mutate();
-      navigate("/");
-    } else {
-      setIsInputUsernameSafe({ isSafe: false, message: "500 Error" });
-      setIsInputPasswordSafe({ isSafe: false, message: "500 Error" });
-    }
   };
 
   /* eslint-disable react-hooks/exhaustive-deps */
